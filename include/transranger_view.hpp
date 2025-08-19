@@ -13,14 +13,13 @@
 #pragma once
 #endif
 
-#include <range/v3/range_fwd.hpp>
-#include <range/v3/utility/semiregular_box.hpp>
+#include <ranges>
 #include <type_traits>
 #include <utility>
 
 namespace transrangers{
 
-/* Ranger -> Range-v3 view adaptors */
+/* Ranger -> std::ranges view adaptors */
 
 namespace detail::view{
 
@@ -112,7 +111,7 @@ private:
 };
 
 template<typename Ranger,typename Iterator>
-class view:public ranges::view_base
+class view:public std::ranges::view_base
 {
 public:
   view()=default;
