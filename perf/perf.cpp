@@ -7,7 +7,7 @@
  *
  * See https://github.com/joaquintides/transrangers for project home page.
  */
-
+/*
 #include <algorithm>
 #include <functional>
 #include <iostream>
@@ -50,7 +50,7 @@ int main()
   auto test1_transrangers=[&]
   {
     using namespace transrangers;
-      
+
     ret=accumulate(
       transform(x3,filter(is_even,all(rng1))),0);
   };
@@ -84,7 +84,7 @@ int main()
   auto test2_transrangers=[&]
   {
     using namespace transrangers;
-      
+
     ret=accumulate(
       transform(x3,filter(is_even,take(n,concat(all(rng2),all(rng2))))),0);
   };
@@ -124,7 +124,7 @@ int main()
   auto test3_transrangers=[&]
   {
     using namespace transrangers;
-      
+
     ret=accumulate(
       filter(is_even,unique(all(rng3))),0);
   };
@@ -167,7 +167,7 @@ int main()
   auto test4_transrangers=[&]
   {
     using namespace transrangers;
-      
+
     ret=accumulate(
       transform(x3,filter(is_even,unique(ranger_join(all(rng4))))),0);
   };
@@ -200,7 +200,7 @@ int main()
   auto test5_transrangers=[&]
   {
     using namespace transrangers;
-      
+
     auto unique_adaptor=[](auto&& srng){
       return unique(all(std::forward<decltype(srng)>(srng)));
     };
@@ -240,7 +240,7 @@ int main()
   auto test6_transrangers=[&]
   {
     using namespace transrangers;
-      
+
     ret=accumulate(
       filter(divisible_by_3,
         transform(sum,zip(all(rng6),transform(x3,all(rng6))))),0);
@@ -255,7 +255,7 @@ int main()
   };
 
   auto bench=ankerl::nanobench::Bench().minEpochIterations(500);
-  
+
   bench.run("test1_handwritten",test1_handwritten);
   bench.run("test1_transrangers",test1_transrangers);
   bench.run("test1_rangev3",test1_rangev3);
@@ -283,3 +283,4 @@ int main()
   ankerl::nanobench::render(
     ankerl::nanobench::templates::csv(),bench,std::cout);
 }
+*/

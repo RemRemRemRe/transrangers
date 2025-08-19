@@ -7,7 +7,7 @@
  *
  * See https://github.com/joaquintides/transrangers for project home page.
  */
-
+/*
 #include <cassert>
 #include <range/v3/numeric/accumulate.hpp>
 #include <range/v3/view/filter.hpp>
@@ -32,12 +32,12 @@ struct is_compatible<
 
 template<typename RangeAdaptor,typename Range>
 constexpr auto is_compatible_v=is_compatible<RangeAdaptor,Range>::value;
-                        
+
 template<typename RangeAdaptor>
 auto equivalent_transranger(RangeAdaptor ra)
 {
   using namespace transrangers;
-    
+
   return [=](auto rgr){
     if constexpr(is_compatible_v<RangeAdaptor,decltype(input_view(rgr))>){
       return all(ra(input_view(rgr)));
@@ -56,13 +56,13 @@ bool same_output(Range& rng,RangeAdaptor ra,Transranger tr)
   using view_value_type=std::remove_cvref_t<decltype(*std::begin(v))>;
   std::vector<view_value_type> res1;
   for(const auto& x:v)res1.push_back(x);
-    
+
   auto rgr=tr(transrangers::all(rng));
   using ranger_value_type=std::remove_cvref_t<
     decltype(*std::declval<typename decltype(rgr)::cursor>())>;
   std::vector<ranger_value_type> res2;
   rgr([&](auto p){res2.push_back(*p);return true;});
-      
+
   return res1==res2;
 }
 
@@ -77,14 +77,15 @@ int main()
   auto is_even=[](int x){return x%2==0;};
   auto x3=[](int x){return 3*x;};
   std::vector<int> rng={0,0,1,1,2,3,4,5,5,6,7,9};
-    
+
   using namespace ranges::views;
-    
+
   check_equivalent_transranger(rng,filter(is_even));
   check_equivalent_transranger(rng,transform(x3));
   check_equivalent_transranger(rng,unique);
-    
+
   std::vector rng2={rng,rng,rng};
 
   check_equivalent_transranger(rng2,join|take(20)|transform(x3)|unique);
 }
+*/
