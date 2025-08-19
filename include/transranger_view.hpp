@@ -62,9 +62,9 @@ public:
     {return !(x==y);}
 
 protected:
-  std::optional<Ranger> rgr;
-  bool                            end;
-  typename Ranger::cursor         p;
+  std::optional<Ranger>	rgr;
+  bool					end;
+  Ranger::cursor		p;
 
 private:
   Iterator& final(){return static_cast<Iterator&>(*this);}
