@@ -34,7 +34,9 @@ public:
   using difference_type=std::ptrdiff_t;
     
   iterator_base()=default;
-  iterator_base(const Ranger& rgr):rgr{rgr}{} /* invalid till first ++ */ 
+  iterator_base(const Ranger& rgr) : rgr{rgr}, end(false)
+  {
+  } /* invalid till first ++ */
   iterator_base(const iterator_base&)=default;
   
   iterator_base& operator=(const iterator_base& x)
