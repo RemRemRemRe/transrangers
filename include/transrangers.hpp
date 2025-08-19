@@ -7,7 +7,7 @@
  *
  * See https://github.com/joaquintides/transrangers for project home page.
  */
- 
+
 #ifndef JOAQUINTIDES_TRANSRANGERS_HPP
 #define JOAQUINTIDES_TRANSRANGERS_HPP
 
@@ -34,7 +34,7 @@
 
 namespace transrangers{
 
-template<typename Cursor,typename F> 
+template<typename Cursor,typename F>
 struct ranger_class:F
 {
   using cursor=Cursor;
@@ -52,7 +52,7 @@ auto all(Range&& rng)
   using std::begin;
   using std::end;
   using cursor=decltype(begin(rng));
-  
+
   return ranger<cursor>(
     [first=begin(rng),last=end(rng)](auto dst) TRANSRANGERS_HOT_MUTABLE {
     auto it=first;
@@ -65,8 +65,8 @@ template<typename Range>
 struct all_copy
 {
   using ranger=decltype(all(std::declval<Range&>()));
-  using cursor=typename ranger::cursor;
-  
+  using cursor= ranger::cursor;
+
   auto operator()(const auto& p){return rgr(p);}
 
   Range  rng;
@@ -90,8 +90,8 @@ auto pred_box(Pred pred)
 template<typename Pred,typename Ranger>
 auto filter(Pred pred_,Ranger rgr)
 {
-  using cursor=typename Ranger::cursor;
-    
+  using cursor= Ranger::cursor;
+
   return ranger<cursor>(
     [=,pred=pred_box(pred_)](auto dst) TRANSRANGERS_HOT_MUTABLE {
     return rgr([&](const auto& p) TRANSRANGERS_HOT {
@@ -103,8 +103,8 @@ auto filter(Pred pred_,Ranger rgr)
 template<typename Cursor,typename F,typename=void>
 struct deref_fun
 {
-  decltype(auto) operator*()const{return (*pf)(*p);} 
-    
+  decltype(auto) operator*()const{return (*pf)(*p);}
+
   Cursor p;
   F*     pf;
 };
@@ -119,16 +119,16 @@ struct deref_fun<
 {
   deref_fun(Cursor p={},F* =nullptr):p{p}{}
 
-  decltype(auto) operator*()const{return F()(*p);} 
-    
+  decltype(auto) operator*()const{return F()(*p);}
+
   Cursor p;
 };
-    
+
 template<typename F,typename Ranger>
 auto transform(F f,Ranger rgr)
 {
   using cursor=deref_fun<typename Ranger::cursor,F>;
-    
+
   return ranger<cursor>([=](auto dst) TRANSRANGERS_HOT_MUTABLE {
     return rgr([&](const auto& p) TRANSRANGERS_HOT {
       return dst(cursor{p,&f});
@@ -139,8 +139,8 @@ auto transform(F f,Ranger rgr)
 template<typename Ranger>
 auto take(int n,Ranger rgr)
 {
-  using cursor=typename Ranger::cursor;
-    
+  using cursor= Ranger::cursor;
+
   return ranger<cursor>([=](auto dst) TRANSRANGERS_HOT_MUTABLE {
     if(n)return rgr([&](const auto& p) TRANSRANGERS_HOT {
       --n;
@@ -159,8 +159,8 @@ auto concat(Ranger rgr)
 template<typename Ranger,typename... Rangers>
 auto concat(Ranger rgr,Rangers... rgrs)
 {
-  using cursor=typename Ranger::cursor;
-    
+  using cursor= Ranger::cursor;
+
   return ranger<cursor>(
     [=,cont=false,next=concat(rgrs...)]
     (auto dst) TRANSRANGERS_HOT_MUTABLE {
@@ -175,8 +175,8 @@ auto concat(Ranger rgr,Rangers... rgrs)
 template<typename Ranger>
 auto unique(Ranger rgr)
 {
-  using cursor=typename Ranger::cursor;
-    
+  using cursor= Ranger::cursor;
+
   return ranger<cursor>(
     [=,start=true,p=cursor{}](auto dst) TRANSRANGERS_HOT_MUTABLE {
     if(start){
@@ -204,11 +204,11 @@ struct identity_adaption
 template<typename Ranger,typename Adaption=identity_adaption>
 auto join(Ranger rgr)
 {
-  using cursor=typename Ranger::cursor;
+  using cursor= Ranger::cursor;
   using subranger=std::remove_cvref_t<
-    decltype(Adaption::adapt(*std::declval<const cursor&>()))>; 
-  using subranger_cursor=typename subranger::cursor;
-    
+    decltype(Adaption::adapt(*std::declval<const cursor&>()))>;
+  using subranger_cursor= subranger::cursor;
+
   return ranger<subranger_cursor>(
     [=,osrgr=std::optional<subranger>{}]
     (auto dst) TRANSRANGERS_HOT_MUTABLE {
@@ -248,7 +248,7 @@ struct zip_cursor
       return std::tuple<decltype(*ps)...>{*ps...};
     },ps);
   }
-  
+
   std::tuple<typename Rangers::cursor...> ps;
 };
 
@@ -270,7 +270,7 @@ auto zip(Ranger rgr,Rangers... rgrs)
           return (rgrs([&](const auto& p) TRANSRANGERS_HOT {
             std::get<I+1>(zp.ps)=p;
             return false;
-          })||...); 
+          })||...);
         }(std::index_sequence_for<Rangers...>{}
 #ifdef _MSC_VER
           ,rgrs...
@@ -279,7 +279,7 @@ auto zip(Ranger rgr,Rangers... rgrs)
           finished=true;
           return false;
         }
-        
+
         return dst(zp);
       })||finished;
     }
