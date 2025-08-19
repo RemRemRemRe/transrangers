@@ -264,11 +264,11 @@ auto zip(Ranger rgr,Rangers... rgrs)
         std::get<0>(zp.ps)=p;
         if([&]<std::size_t... I>(std::index_sequence<I...>
 #ifdef _MSC_VER
-          ,auto&... rgrs
+          ,auto&... rgrs1
 #endif
         ) TRANSRANGERS_HOT {
-          return (rgrs([&](const auto& p) TRANSRANGERS_HOT {
-            std::get<I+1>(zp.ps)=p;
+          return (rgrs1([&](const auto& p1) TRANSRANGERS_HOT {
+            std::get<I+1>(zp.ps)=p1;
             return false;
           })||...);
         }(std::index_sequence_for<Rangers...>{}
