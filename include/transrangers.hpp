@@ -165,7 +165,7 @@ auto concat(Ranger rgr,Rangers... rgrs)
     [=,cont=false,next=concat(rgrs...)]
     (auto dst) TRANSRANGERS_HOT_MUTABLE {
       if(!cont){
-        if(!(cont=rgr(dst)))return false;
+        if(cont=rgr(dst); !cont)return false;
       }
       return next(dst);
     }
