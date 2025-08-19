@@ -5,7 +5,7 @@
  *
  * See https://github.com/joaquintides/transrangers for project home page.
  */
- 
+
 #ifndef JOAQUINTIDES_TRANSRANGER_VIEW_HPP
 #define JOAQUINTIDES_TRANSRANGER_VIEW_HPP
 
@@ -32,36 +32,36 @@ public:
   using value_type=
     std::remove_cvref_t<decltype(*std::declval<typename Ranger::cursor>())>;
   using difference_type=std::ptrdiff_t;
-    
+
   iterator_base()=default;
   iterator_base(const Ranger& rgr) : rgr{rgr}, end(false)
   {
   } /* invalid till first ++ */
   iterator_base(const iterator_base&)=default;
-  
+
   iterator_base& operator=(const iterator_base& x)
   {
     /* Direct assignment fails to compile sometimes (e.g. when
      * ranges::views::unique is part of the chain), no idea why.
      */
     this->rgr=x.rgr.get();
-    
+
     this->end=x.end;
     this->p=x.p;
     return *this;
   }
-  
+
   decltype(auto) operator*()const{return *p;}
   Iterator& operator++(){final().advance();return final();}
   Iterator operator++(int){auto x=final();final().advance();return x;}
-    
+
   friend bool operator==(const iterator_base& x,const sentinel&)
     {return x.end;}
   friend bool operator!=(const iterator_base& x,const sentinel& y)
     {return !(x==y);}
 
 protected:
-  ranges::semiregular_box<Ranger> rgr;
+  std::optional<Ranger> rgr;
   bool                            end;
   typename Ranger::cursor         p;
 
@@ -77,13 +77,13 @@ class input_iterator:
 
 public:
   using super::super;
-    
+
 private:
   friend super;
 
   void advance()
   {
-    this->end=this->rgr([&](auto q){this->p=q;return false;}); 
+    this->end=this->rgr([&](auto q){this->p=q;return false;});
   }
 };
 
@@ -95,20 +95,20 @@ class forward_iterator:
 
 public:
   using super::super;
-  
+
   friend bool operator==(const forward_iterator& x,const forward_iterator& y)
     {return x.n==y.n;}
   friend bool operator!=(const forward_iterator& x,const forward_iterator& y)
     {return !(x==y);}
-  
+
 private:
   friend super;
 
   void advance()
   {
-    this->end=this->rgr([&](auto q){this->p=q;++n;return false;}); 
+    this->end=this->rgr([&](auto q){this->p=q;++n;return false;});
   }
-  
+
   std::size_t n=0;
 };
 
@@ -118,12 +118,12 @@ class view:public std::ranges::view_base
 public:
   view()=default;
   view(Ranger rgr):rgr{std::move(rgr)}{}
-  
+
   auto begin(){return ++Iterator{rgr};} /* note ++ */
   auto end(){return sentinel{};}
-  
+
 private:
-  ranges::semiregular_box<Ranger> rgr;
+  std::optional<Ranger> rgr;
 };
 
 } /* detail::view */
