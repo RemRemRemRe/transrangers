@@ -13,6 +13,7 @@
 #pragma once
 #endif
 
+#include <optional>
 #include <ranges>
 #include <type_traits>
 #include <utility>
@@ -83,7 +84,7 @@ private:
 
   void advance()
   {
-    this->end=this->rgr([&](auto q){this->p=q;return false;});
+    this->end=this->rgr.value()([&](auto q){this->p=q;return false;});
   }
 };
 
@@ -106,7 +107,7 @@ private:
 
   void advance()
   {
-    this->end=this->rgr([&](auto q){this->p=q;++n;return false;});
+    this->end=this->rgr.value()([&](auto q){this->p=q;++n;return false;});
   }
 
   std::size_t n=0;
@@ -119,7 +120,7 @@ public:
   view()=default;
   view(Ranger rgr):rgr{std::move(rgr)}{}
 
-  auto begin(){return ++Iterator{rgr};} /* note ++ */
+  auto begin(){return ++Iterator{*rgr};} /* note ++ */
   auto end(){return sentinel{};}
 
 private:
