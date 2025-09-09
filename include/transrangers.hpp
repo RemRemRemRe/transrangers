@@ -33,12 +33,38 @@
 #endif
 
 namespace transrangers{
+    
+namespace detail
+{
+    namespace Private
+    {
+        template <typename, template <typename...> typename>
+        struct TIsInstanceImpl : std::false_type {};
 
+        template <template <typename...> typename U, typename...Ts>
+        struct TIsInstanceImpl<U<Ts...>, U> : std::true_type {};
+    }
+
+    // check if type T is an instantiation of template U
+    // @see https://stackoverflow.com/a/61040973
+    template <typename T, template <typename ...> typename U>
+    using is_instance = Private::TIsInstanceImpl<std::remove_cvref_t<T>, U>;
+
+    template <typename T, template <typename ...> typename U>
+    constexpr bool is_instance_v = Private::TIsInstanceImpl<std::remove_cvref_t<T>, U>::value;
+}
+    
 template<typename Cursor,typename F>
 struct ranger_class:F
 {
   using cursor=Cursor;
 };
+
+template<typename Range>
+struct all_copy;
+
+template<class TRanger>
+concept is_ranger = (detail::is_instance_v<TRanger, transrangers::ranger_class> || detail::is_instance_v<TRanger, transrangers::all_copy>);
 
 template<typename Cursor,typename F>
 auto ranger(F f)
@@ -94,7 +120,7 @@ auto pred_box(Pred pred)
   };
 }
 
-template<typename Pred,typename Ranger>
+template<typename Pred,is_ranger Ranger>
 auto filter(Pred pred_,Ranger rgr)
 {
   using cursor= Ranger::cursor;
@@ -131,7 +157,7 @@ struct deref_fun<
   Cursor p;
 };
 
-template<typename F,typename Ranger>
+template<typename F,is_ranger Ranger>
 auto transform(F f,Ranger rgr)
 {
   using cursor=deref_fun<typename Ranger::cursor,F>;
@@ -143,7 +169,7 @@ auto transform(F f,Ranger rgr)
   });
 }
 
-template<typename Ranger>
+template<is_ranger Ranger>
 auto take(int n,Ranger rgr)
 {
   using cursor= Ranger::cursor;
@@ -157,13 +183,13 @@ auto take(int n,Ranger rgr)
   });
 }
 
-template<typename Ranger>
+template<is_ranger Ranger>
 auto concat(Ranger rgr)
 {
   return rgr;
 }
 
-template<typename Ranger,typename... Rangers>
+template<is_ranger Ranger,is_ranger... Rangers>
 auto concat(Ranger rgr,Rangers... rgrs)
 {
   using cursor= Ranger::cursor;
@@ -179,7 +205,7 @@ auto concat(Ranger rgr,Rangers... rgrs)
   );
 }
 
-template<typename Ranger>
+template<is_ranger Ranger>
 auto unique(Ranger rgr)
 {
   using cursor= Ranger::cursor;
@@ -208,7 +234,7 @@ struct identity_adaption
   };
 };
 
-template<typename Ranger,typename Adaption=identity_adaption>
+template<is_ranger Ranger,typename Adaption=identity_adaption>
 auto join(Ranger rgr)
 {
   using cursor= Ranger::cursor;
@@ -240,13 +266,13 @@ struct all_adaption
   };
 };
 
-template<typename Ranger>
+template<is_ranger Ranger>
 auto ranger_join(Ranger rgr)
 {
   return join<Ranger,all_adaption>(std::move(rgr));
 }
 
-template<typename... Rangers>
+template<is_ranger... Rangers>
 struct zip_cursor
 {
   auto operator*()const
@@ -259,7 +285,7 @@ struct zip_cursor
   std::tuple<typename Rangers::cursor...> ps;
 };
 
-template<typename Ranger,typename... Rangers>
+template<is_ranger Ranger,is_ranger... Rangers>
 auto zip(Ranger rgr,Rangers... rgrs)
 {
   using cursor=zip_cursor<Ranger,Rangers...>;
@@ -293,7 +319,7 @@ auto zip(Ranger rgr,Rangers... rgrs)
   );
 }
 
-template<typename Ranger,typename T>
+template<is_ranger Ranger,typename T>
 T accumulate(Ranger rgr,T init)
 {
   rgr([&](const auto& p) TRANSRANGERS_HOT{
