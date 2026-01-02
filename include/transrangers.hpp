@@ -72,6 +72,18 @@ auto ranger(F f)
   return ranger_class<Cursor,F>{f};
 }
 
+namespace detail
+{
+  template<is_ranger ranger>
+  struct ranger_element_type {
+    using cursor = ranger::cursor;
+    using type = std::decay_t<decltype(*std::declval<cursor>())>;
+  };
+}
+
+template<typename ranger>
+using ranger_element_t = detail::ranger_element_type<ranger>::type;
+  
 template<typename Range>
 auto all(Range&& rng)
 {
