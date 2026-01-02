@@ -202,6 +202,22 @@ auto take(int n,Ranger rgr)
   });
 }
 
+template<int count, is_ranger Ranger>
+auto take(Ranger rgr)
+{
+  static_assert(count > 0, "count has to be greater than zero");
+
+  using cursor= Ranger::cursor;
+
+  return transrangers::ranger<cursor>([=](auto dst) TRANSRANGERS_HOT_MUTABLE {
+    int n = count;
+    return rgr([&](const auto& p) TRANSRANGERS_HOT {
+      --n;
+      return dst(p)&&(n!=0);
+    });
+  });
+}
+
 template<is_ranger Ranger>
 auto concat(Ranger rgr)
 {
