@@ -145,13 +145,6 @@ auto filter(Pred pred_,Ranger rgr)
   });
 }
 
-template<template<typename> typename FunctorTemplate, is_ranger Ranger>
-auto filter(Ranger rgr)
-{
-  using element_type = ranger_element_t<Ranger>;
-  return filter(FunctorTemplate<element_type>{}, rgr);
-}
-
 template<typename Cursor,typename F,typename=void>
 struct deref_fun
 {
