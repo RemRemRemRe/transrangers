@@ -77,7 +77,7 @@ namespace detail
   template<is_ranger ranger>
   struct ranger_element_type {
     using cursor = ranger::cursor;
-    using type = std::decay_t<decltype(*std::declval<cursor>())>;
+    using type = decltype(*std::declval<cursor>());
   };
 }
 
