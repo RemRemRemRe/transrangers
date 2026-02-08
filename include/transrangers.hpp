@@ -21,6 +21,10 @@
 #include <type_traits>
 #include <utility>
 
+#define FORCEINLINE_TRANSRANGERS 1 && (UE_BUILD_TEST || UE_BUILD_SHIPPING)
+
+#if FORCEINLINE_TRANSRANGERS
+
 #if defined(__clang__)
 #define TRANSRANGERS_HOT __attribute__((flatten))
 #define TRANSRANGERS_HOT_MUTABLE  __attribute__((flatten)) mutable
@@ -30,6 +34,13 @@
 #else
 #define TRANSRANGERS_HOT [[msvc::forceinline]]
 #define TRANSRANGERS_HOT_MUTABLE mutable [[msvc::forceinline]]
+#endif
+
+#else
+
+#define TRANSRANGERS_HOT
+#define TRANSRANGERS_HOT_MUTABLE mutable
+
 #endif
 
 namespace transrangers{
