@@ -44,7 +44,7 @@
 #endif
 
 namespace transrangers{
-  
+
 namespace detail
 {
 namespace Private
@@ -101,7 +101,7 @@ namespace detail
 
 template<typename ranger>
 using ranger_element_t = detail::ranger_element_type<ranger>::type;
-  
+
 template<typename Range>
 auto all(Range&& rng)
 {
@@ -113,12 +113,12 @@ auto all(Range&& rng)
     [first=begin(rng),last=end(rng)](auto dst) TRANSRANGERS_HOT_MUTABLE {
     auto it=first;
     while(it != last) {
-        auto current = it;
-        ++it;
-        if(!dst(current)) {
+        if(!dst(it)) {
+            ++it;
             first = it;
             return false;
         }
+        ++it;
     }
     return true;
   });
