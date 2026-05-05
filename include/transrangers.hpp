@@ -47,22 +47,29 @@ namespace transrangers{
   
 namespace detail
 {
-  namespace Private
-  {
-    template <typename, template <typename...> typename>
-    struct TIsInstanceImpl : std::false_type {};
+namespace Private
+{
 
-    template <template <typename...> typename U, typename...Ts>
-    struct TIsInstanceImpl<U<Ts...>, U> : std::true_type {};
-  }
+// check if type T is an instantiation of template U
+// @see https://stackoverflow.com/a/61040973
+template <typename, template <typename...> typename>
+struct TInstanceOfImpl : std::false_type
+{
+};
 
-  // check if type T is an instantiation of template U
-  // @see https://stackoverflow.com/a/61040973
-  template <typename T, template <typename ...> typename U>
-  using is_instance = Private::TIsInstanceImpl<std::remove_cvref_t<T>, U>;
+template <template <typename...> typename U, typename... Ts>
+struct TInstanceOfImpl<const volatile U<Ts...>, U> : std::true_type
+{
+};
 
-  template <typename T, template <typename ...> typename U>
-  constexpr bool is_instance_v = Private::TIsInstanceImpl<std::remove_cvref_t<T>, U>::value;
+// @see Engine/Source/Runtime/Core/Public/Concepts/ConceptDefinitionRules.md
+template <typename T, template <typename...> typename U>
+concept CInstanceOfPrivate = TInstanceOfImpl<T, U>::value;
+
+}
+
+template <typename T, template <typename...> typename U>
+concept CInstanceOf = Private::CInstanceOfPrivate<const volatile std::remove_reference_t<T>, U>;
 }
 
 template<typename Cursor,typename F>
@@ -75,7 +82,7 @@ template<typename Range>
 struct all_copy;
 
 template<class TRanger>
-concept is_ranger = (detail::is_instance_v<TRanger, transrangers::ranger_class> || detail::is_instance_v<TRanger, transrangers::all_copy>);
+concept is_ranger = (detail::CInstanceOf<TRanger, ranger_class> || detail::CInstanceOf<TRanger, all_copy>);
 
 template<typename Cursor,typename F>
 auto ranger(F f)
